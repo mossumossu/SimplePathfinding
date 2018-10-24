@@ -2,8 +2,39 @@
 <html>
 <head>
 	<title>Title!</title>
+	<style>
+		.maze{
+			border: 1px solid #ddd;
+			display: inline-block;
+			padding: 1px;
+		}
+		.row{
+			margin: 0;
+		}
+		.cell{
+			border: 1px solid #ddd;
+			width: 20px;
+			height: 20px;
+			display: inline-block;
+			margin: 1px;
+			vertical-align: top;
+		}
+	</style>
 </head>
 <body>
-	<p>Lorem ipsum etc etc.</p>
+	<div class="controls">
+		<button onclick="mazeCreate(maze)">Create Maze</button> 
+		<button onclick="mazeDraw(maze)">Draw Maze</button>
+		<div class="slidecontainer">
+			<input type="range" min="0" max="10" value="2" class="slider" id="myRange">
+		</div>
+	</div>
+
+	<div class="maze">
+		<canvas id="myCanvas" width="600" height="600">
+		</canvas> 
+	</div>
+
+	<script src="main.js"></script>
 </body>
 </html>
