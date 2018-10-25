@@ -21,13 +21,14 @@ function mazeCreate(maze) {
 			//use random to decide if cell is blocked
 			if(density > Math.random()){
 				maze[i][j] = 'Blocked';
+			} else {
+				maze[i][j] = 'Empty';
 			}
 		}
 	}
 }
 
 function mazeDraw(maze) {
-
 
 	for (var i = 0; i < mazeSize; i++) {
 		for (var j = 0; j < mazeSize; j++) {
