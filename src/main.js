@@ -6,16 +6,18 @@ var ctx = canvas.getContext("2d");
 var slider = document.getElementById("myRange");
 
 
+var startX;
+var startY;
+var endX;
+var endY;
+
+
 for (var i = 0; i < mazeSize; i++) {
 	maze[i] = [];
 
 	for (var j = 0; j < mazeSize; j++) {
 		maze[i][j] = 'Empty';
 	}
-}
-
-function getRandomInt(max) {
-	return Math.floor(Math.random() * Math.floor(max));
 }
 
 function mazeCreate(maze) {
@@ -36,8 +38,7 @@ function mazeCreate(maze) {
 	}
 	//set start and end points
 	var startSet = 'false';
-	endSet = 'false';
-	var startX, startY, endX, endY;
+	var endSet = 'false';
 
 	while (startSet == 'false'){
 		startX = getRandomInt(mazeSize);
@@ -62,7 +63,16 @@ function mazeCreate(maze) {
 	}
 }
 
+function findPath(maze) {
+	ctx.beginPath();
+	ctx.moveTo((startX*30)+15,(startY*30)+15);
+	ctx.lineTo((endX*30)+15,(endY*30)+15)
+	ctx.stroke();
+}
 
+function getRandomInt(max) {
+	return Math.floor(Math.random() * Math.floor(max));
+}
 
 slider.oninput = function densityUpdate(){
 	density = this.value*0.1;
