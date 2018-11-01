@@ -90,22 +90,22 @@ function BFS(mazeArray){
 	while (searchQueue.peek() != null){
 		curCell = searchQueue.dequeue();
 
-		if(mazeArray[curCell.cellX][curCell.cellY+1] != null){
+		if(mazeArray[curCell.cellX][curCell.cellY+1] !== undefined){
 			nextCell = mazeArray[curCell.cellX][curCell.cellY+1];
 			checkNext(curCell, nextCell, searchQueue);
 		}
 		
-		if(mazeArray[curCell.cellX+1][curCell.cellY] != null){
+		if(mazeArray[curCell.cellX+1] !== undefined){
 			nextCell = mazeArray[curCell.cellX+1][curCell.cellY];
 			checkNext(curCell, nextCell, searchQueue);
 		}
 		
-		if(mazeArray[curCell.cellX][curCell.cellY-1] != null){
+		if(mazeArray[curCell.cellX][curCell.cellY-1] !== undefined){
 			nextCell = mazeArray[curCell.cellX][curCell.cellY-1];
 			checkNext(curCell, nextCell, searchQueue);
 		}
 		
-		if(mazeArray[curCell.cellX-1][curCell.cellY] != null){
+		if(mazeArray[curCell.cellX-1] !== undefined){
 			nextCell = mazeArray[curCell.cellX-1][curCell.cellY];
 			checkNext(curCell, nextCell, searchQueue);
 		}	
