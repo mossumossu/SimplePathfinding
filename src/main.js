@@ -43,24 +43,27 @@ var maze = {
 		while (startSet == false){
 			startX = getRandomInt(mazeSize);
 			startY = getRandomInt(mazeSize);
-			if(mazeArray[startX][startY].blocked == 0){
-				mazeArray[startX][startY].start = 1;
-				startSet = true;
-				ctx.fillStyle = "#32CD32"; 
-				ctx.fillRect(startX*30,startY*30,30,30)
-			}
+			
+			mazeArray[startX][startY].start = 1;
+			mazeArray[startX][startY].blocked = 0;
+			mazeArray[startX][startY].distanceFromStart = 0;
+			startSet = true;
+			ctx.fillStyle = "#32CD32"; 
+			ctx.fillRect(startX*30,startY*30,30,30)			
 		}
 	
 		while (endSet == false){
 			endX = getRandomInt(mazeSize);
 			endY = getRandomInt(mazeSize);
-			if(mazeArray[startX][startY].blocked == 0){
-				mazeArray[endX][endY].end = 1;
-				endSet = true;
-				ctx.fillStyle = "#ff0000"; 
-				ctx.fillRect(endX*30,endY*30,30,30)
-			}
+			
+			mazeArray[endX][endY].end = 1;
+			mazeArray[endX][endY].blocked = 0;
+			mazeArray[endX][endY].distanceFromStart = 0;
+			endSet = true;
+			ctx.fillStyle = "#ff0000"; 
+			ctx.fillRect(endX*30,endY*30,30,30)		
 		}
+		document.getElementById('lblMessage').innerHTML = 'Map generated.';
 	},
 	ReturnStartCell: function(){
 		return mazeArray[startX][startY];
@@ -96,7 +99,7 @@ function DFS(mazeArray){
 
 	while (DFSCompleted == false){
 		changed = false;
-		// check n
+		// check s
 		if(mazeArray[curCell.cellX][curCell.cellY+1] !== undefined && changed == false){
 			nextCell = mazeArray[curCell.cellX][curCell.cellY+1];
 			DFSChecker(nextCell, stack);
@@ -106,7 +109,7 @@ function DFS(mazeArray){
 			nextCell = mazeArray[curCell.cellX+1][curCell.cellY];
 			DFSChecker(nextCell, stack);
 		}
-		// check s
+		// check n
 		if(mazeArray[curCell.cellX][curCell.cellY-1] !== undefined && changed == false){
 			nextCell = mazeArray[curCell.cellX][curCell.cellY-1];
 			DFSChecker(nextCell, stack);
@@ -123,21 +126,34 @@ function DFS(mazeArray){
 			// js equivilent of peek
 			curCell = stack[stack.length-1];
 		}
+		if(stack.length == 0){
+			document.getElementById('lblMessage').innerHTML = 'No valid route.';
+			DFSCompleted = true;
+		}
 	}
+
+	// if we found a valid route
+	if(stack.length > 0){
+		document.getElementById('lblMessage').innerHTML = 'Route found.';	
+		curCell = stack.pop();
+		
+		// loop through stack to draw path
+		while(pathCompleted == false){		
+			nextCell = stack.pop();
 	
-	curCell = stack.pop();
-
-	while(pathCompleted == false){
-		nextCell = stack.pop();
-
-		ctx.beginPath();
-		ctx.moveTo((curCell.cellX*30)+15,(curCell.cellY*30)+15);
-		ctx.lineTo((nextCell.cellX*30)+15,(nextCell.cellY*30)+15);
-		ctx.stroke();
-
-		curCell = nextCell;
-	}
+			ctx.beginPath();
+			ctx.moveTo((curCell.cellX*30)+15,(curCell.cellY*30)+15);
+			ctx.lineTo((nextCell.cellX*30)+15,(nextCell.cellY*30)+15);
+			ctx.stroke();
 	
+			curCell = nextCell;
+	
+			// check if we just finished our path
+			if(curCell.start == 1){
+				pathCompleted = true;
+			}
+		}
+	}	
 }
 
 function DFSChecker(nextCell, stack){
@@ -227,13 +243,10 @@ function BFS(mazeArray){
 			curCell = lowestNeighbor;
 
 		}
+		document.getElementById('lblMessage').innerHTML = 'Route found.';
 	} else {
-		console.log("No valid route.")
+		document.getElementById('lblMessage').innerHTML = 'No valid route.';
 	}
-}
-
-function getRandomInt(max) {
-	return Math.floor(Math.random() * Math.floor(max));
 }
 
 function checkNext(curCell, nextCell, searchQueue){
@@ -246,6 +259,10 @@ function checkNext(curCell, nextCell, searchQueue){
 		searchQueue.enqueue(nextCell);
 		ctx.fillText(nextCell.distanceFromStart,(nextCell.cellX*30)+15,(nextCell.cellY*30)+15)
 	}
+}
+
+function getRandomInt(max) {
+	return Math.floor(Math.random() * Math.floor(max));
 }
 
 slider.oninput = function densityUpdate(){

@@ -19,6 +19,9 @@
 			margin: 1px;
 			vertical-align: top;
 		}
+		.controls{
+			padding-bottom: 10px;
+		}
 	</style>
 </head>
 <body>
@@ -26,9 +29,8 @@
 		<button onclick="maze.Create(mazeArray)">Create Maze</button> 
 		<button onclick="DFS(mazeArray)">DFS Test</button> 
 		<button onclick="BFS(mazeArray)">BFS Test</button> 
-		<div class="slidecontainer">
-			<input type="range" min="0" max="10" value="2" class="slider" id="myRange">
-		</div>
+		<input type="range" min="0" max="10" value="2" class="slider" id="myRange">
+		<label id="lblMessage"></label>
 	</div>
 
 	<div class="mazeCanvas">
