@@ -5,6 +5,7 @@ var density = 0.1;
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var slider = document.getElementById("myRange");
+var checkbox = document.getElementById("chbx");
 
 var changed;
 var curCell;
@@ -133,6 +134,7 @@ function DFS(mazeArray){
 		}
 	}
 
+	ctx.strokeStyle = "#ff0000";
 	// if we found a valid route
 	if(stack.length > 0){
 		document.getElementById('lblMessage').innerHTML = 'Route found.';	
@@ -160,9 +162,12 @@ function DFS(mazeArray){
 function DFSChecker(nextCell, stack){
 	if(nextCell.blocked == 0 && nextCell.visited == false){
 		nextCell.visited = true;
-		ctx.fillStyle = "#ff0000";
-		ctx.fillText('x',(nextCell.cellX*30),(nextCell.cellY*30)+30)
 
+		if(checkbox.checked){
+			ctx.fillStyle = "#ff0000";
+			ctx.fillText('x',(nextCell.cellX*30),(nextCell.cellY*30)+30)
+		}
+		
 		if(nextCell.end == 1){
 			DFSCompleted = true;
 		}
@@ -215,7 +220,7 @@ function BFS(mazeArray){
 		// starting at the endpoint
 		curCell = endCell;
 
-		
+		ctx.strokeStyle = "#0000ff";
 
 		// check each neighboring cell and select the one with shortest distance to start, until we reach start
 		while(pathCompleted == false){
@@ -270,8 +275,10 @@ function checkNext(curCell, nextCell, searchQueue){
 	} else if (nextCell.distanceFromStart == 0 && nextCell.start == 0){
 		nextCell.distanceFromStart = curCell.distanceFromStart+1;
 		searchQueue.enqueue(nextCell);
-		ctx.fillStyle = "#0000ff";
-		ctx.fillText(nextCell.distanceFromStart,(nextCell.cellX*30)+15,(nextCell.cellY*30)+15)
+		if(checkbox.checked){
+			ctx.fillStyle = "#0000ff";
+			ctx.fillText(nextCell.distanceFromStart,(nextCell.cellX*30)+15,(nextCell.cellY*30)+15)
+		}		
 	}
 }
 
