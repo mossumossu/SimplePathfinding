@@ -6,6 +6,9 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var slider = document.getElementById("myRange");
 
+var changed;
+var curCell;
+var DFSCompleted;
 
 var startX;
 var startY;
@@ -25,6 +28,7 @@ var maze = {
 					mazeArray[i][j] = new Cell(i, j, 1);
 					ctx.fillStyle = "#000000"; 
 					ctx.fillRect(i*30,j*30,30,30)
+					mazeArray[i][j].distanceFromStart = 999;
 				} else {
 					mazeArray[i][j] = new Cell(i, j, 0);
 					ctx.fillStyle = "#808080"; 
@@ -60,6 +64,9 @@ var maze = {
 	},
 	ReturnStartCell: function(){
 		return mazeArray[startX][startY];
+	},
+	ReturnEndCell: function(){
+		return mazeArray[endX][endY];
 	}
 }
 
@@ -70,20 +77,92 @@ function Cell(X, Y, block){
 	this.start = 0;
 	this.end = 0;
 	this.distanceFromStart = 0;
+	this.visited = false;
 }
 
-function findPath(mazeArray) {
-	ctx.beginPath();
-	ctx.moveTo((startX*30)+15,(startY*30)+15);
-	ctx.lineTo((endX*30)+15,(endY*30)+15)
-	ctx.stroke();
+function DFS(mazeArray){
+
+	var startCell = maze.ReturnStartCell(mazeArray);
+	var endCell = maze.ReturnEndCell(mazeArray);
+	var nextCell;
+	var pathCompleted = false;
+	var stack = [];	
+
+	DFSCompleted = false;
+
+	curCell = startCell;
+	curCell.visited = true;
+	stack.push(startCell);
+
+	while (DFSCompleted == false){
+		changed = false;
+		// check n
+		if(mazeArray[curCell.cellX][curCell.cellY+1] !== undefined && changed == false){
+			nextCell = mazeArray[curCell.cellX][curCell.cellY+1];
+			DFSChecker(nextCell, stack);
+		}
+		// check e
+		if(mazeArray[curCell.cellX+1] !== undefined && changed == false){
+			nextCell = mazeArray[curCell.cellX+1][curCell.cellY];
+			DFSChecker(nextCell, stack);
+		}
+		// check s
+		if(mazeArray[curCell.cellX][curCell.cellY-1] !== undefined && changed == false){
+			nextCell = mazeArray[curCell.cellX][curCell.cellY-1];
+			DFSChecker(nextCell, stack);
+		}
+		// check w
+		if(mazeArray[curCell.cellX-1] !== undefined && changed == false){
+			nextCell = mazeArray[curCell.cellX-1][curCell.cellY];
+			DFSChecker(nextCell, stack);
+		}
+		// if none then go back
+		if(changed == false){
+			stack.pop();
+
+			// js equivilent of peek
+			curCell = stack[stack.length-1];
+		}
+	}
+	
+	curCell = stack.pop();
+
+	while(pathCompleted == false){
+		nextCell = stack.pop();
+
+		ctx.beginPath();
+		ctx.moveTo((curCell.cellX*30)+15,(curCell.cellY*30)+15);
+		ctx.lineTo((nextCell.cellX*30)+15,(nextCell.cellY*30)+15);
+		ctx.stroke();
+
+		curCell = nextCell;
+	}
+	
+}
+
+function DFSChecker(nextCell, stack){
+	if(nextCell.blocked == 0 && nextCell.visited == false){
+		nextCell.visited = true;
+		ctx.fillText('x',(nextCell.cellX*30)+15,(nextCell.cellY*30)+15)
+
+		if(nextCell.end == 1){
+			DFSCompleted = true;
+		}
+
+		curCell = nextCell;
+		stack.push(nextCell);
+		changed = true;		
+	}
 }
 
 function BFS(mazeArray){
 	searchQueue = new Queue();
 	var startCell = maze.ReturnStartCell(mazeArray);
+	var endCell = maze.ReturnEndCell(mazeArray);
 	var curCell;
 	var nextCell;
+	var lowestNeighbor;
+	var pathCompleted = false;
 
 	searchQueue.enqueue(startCell);
 
@@ -93,22 +172,63 @@ function BFS(mazeArray){
 		if(mazeArray[curCell.cellX][curCell.cellY+1] !== undefined){
 			nextCell = mazeArray[curCell.cellX][curCell.cellY+1];
 			checkNext(curCell, nextCell, searchQueue);
-		}
-		
+		}		
 		if(mazeArray[curCell.cellX+1] !== undefined){
 			nextCell = mazeArray[curCell.cellX+1][curCell.cellY];
 			checkNext(curCell, nextCell, searchQueue);
-		}
-		
+		}		
 		if(mazeArray[curCell.cellX][curCell.cellY-1] !== undefined){
 			nextCell = mazeArray[curCell.cellX][curCell.cellY-1];
 			checkNext(curCell, nextCell, searchQueue);
-		}
-		
+		}		
 		if(mazeArray[curCell.cellX-1] !== undefined){
 			nextCell = mazeArray[curCell.cellX-1][curCell.cellY];
 			checkNext(curCell, nextCell, searchQueue);
 		}	
+	}
+
+	if(endCell.distanceFromStart > 0){
+
+		curCell = endCell;
+
+		while(pathCompleted == false){
+			if(mazeArray[curCell.cellX][curCell.cellY+1] !== undefined){
+				nextCell = mazeArray[curCell.cellX][curCell.cellY+1];
+				lowestNeighbor = nextCell;
+			}			
+			if(mazeArray[curCell.cellX+1] !== undefined){
+				nextCell = mazeArray[curCell.cellX+1][curCell.cellY];
+				if(nextCell.distanceFromStart < lowestNeighbor.distanceFromStart){
+					lowestNeighbor = nextCell;
+				}
+			}			
+			if(mazeArray[curCell.cellX][curCell.cellY-1] !== undefined){
+				nextCell = mazeArray[curCell.cellX][curCell.cellY-1];
+				if(nextCell.distanceFromStart < lowestNeighbor.distanceFromStart){
+					lowestNeighbor = nextCell;
+				}
+			}			
+			if(mazeArray[curCell.cellX-1] !== undefined){
+				nextCell = mazeArray[curCell.cellX-1][curCell.cellY];
+				if(nextCell.distanceFromStart < lowestNeighbor.distanceFromStart){
+					lowestNeighbor = nextCell;
+				}
+			}
+
+			ctx.beginPath();
+			ctx.moveTo((curCell.cellX*30)+15,(curCell.cellY*30)+15);
+			ctx.lineTo((lowestNeighbor.cellX*30)+15,(lowestNeighbor.cellY*30)+15);
+			ctx.stroke();
+
+			if(lowestNeighbor.start == 1){
+				pathCompleted = true;
+			}
+
+			curCell = lowestNeighbor;
+
+		}
+	} else {
+		console.log("No valid route.")
 	}
 }
 
@@ -118,8 +238,6 @@ function getRandomInt(max) {
 
 function checkNext(curCell, nextCell, searchQueue){
 	if (nextCell == null){
-		return;
-	} else if (nextCell.end == 1){
 		return;
 	} else if (nextCell.blocked == 1){
 		return;
