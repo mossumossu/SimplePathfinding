@@ -3,22 +3,31 @@
 <head>
 	<title>Simple Pathfinding</title>
 	<style>
+		*{
+			font-family:Arial, sans-serif
+		}
 		.mazeCanvas{
 			border: 1px solid #ddd;
 			display: inline-block;
 			padding: 1px;
 		}
 		.controls{
+			width: 600px;
+			border: 1px solid #ddd;
 			padding-bottom: 10px;
+			padding: 1px;
+		}
+		.button{
+			margin: 2px;
 		}
 	</style>
 </head>
 <body>
 	<div class="controls">
-		<button onclick="maze.Create(mazeArray)">Create Maze</button> 
+		<button onclick="maze.Create(mazeArray)" class="button">Create Maze</button>
 		Maze Density: <input type="range" min="0" max="10" value="2" class="slider" id="myRange"><br>
-		<button onclick="DFS(mazeArray)">DFS Test</button> 
-		<button onclick="BFS(mazeArray)">BFS Test</button> 	
+		<button onclick="DFS(mazeArray)" class="button">DFS Test</button> 
+		<button onclick="BFS(mazeArray)" class="button">BFS Test</button>
 		<input type="checkbox" id="chbx"> Display extra info.
 	</div>
 
