@@ -83,6 +83,7 @@ function Cell(X, Y, block){
 	this.visited = false;
 }
 
+// depth first search algorithm
 function DFS(mazeArray){
 
 	var startCell = maze.ReturnStartCell(mazeArray);
@@ -159,7 +160,8 @@ function DFS(mazeArray){
 function DFSChecker(nextCell, stack){
 	if(nextCell.blocked == 0 && nextCell.visited == false){
 		nextCell.visited = true;
-		ctx.fillText('x',(nextCell.cellX*30)+15,(nextCell.cellY*30)+15)
+		ctx.fillStyle = "#ff0000";
+		ctx.fillText('x',(nextCell.cellX*30),(nextCell.cellY*30)+30)
 
 		if(nextCell.end == 1){
 			DFSCompleted = true;
@@ -171,6 +173,7 @@ function DFSChecker(nextCell, stack){
 	}
 }
 
+// breadth first search algorithm
 function BFS(mazeArray){
 	searchQueue = new Queue();
 	var startCell = maze.ReturnStartCell(mazeArray);
@@ -185,28 +188,36 @@ function BFS(mazeArray){
 	while (searchQueue.peek() != null){
 		curCell = searchQueue.dequeue();
 
+		// check s
 		if(mazeArray[curCell.cellX][curCell.cellY+1] !== undefined){
 			nextCell = mazeArray[curCell.cellX][curCell.cellY+1];
 			checkNext(curCell, nextCell, searchQueue);
-		}		
+		}
+		// check e		
 		if(mazeArray[curCell.cellX+1] !== undefined){
 			nextCell = mazeArray[curCell.cellX+1][curCell.cellY];
 			checkNext(curCell, nextCell, searchQueue);
-		}		
+		}	
+		// check n	
 		if(mazeArray[curCell.cellX][curCell.cellY-1] !== undefined){
 			nextCell = mazeArray[curCell.cellX][curCell.cellY-1];
 			checkNext(curCell, nextCell, searchQueue);
-		}		
+		}
+		// check w		
 		if(mazeArray[curCell.cellX-1] !== undefined){
 			nextCell = mazeArray[curCell.cellX-1][curCell.cellY];
 			checkNext(curCell, nextCell, searchQueue);
 		}	
 	}
 
+	// if endpoint has a measured distance (meaning that there is a valid route to it)
 	if(endCell.distanceFromStart > 0){
-
+		// starting at the endpoint
 		curCell = endCell;
 
+		
+
+		// check each neighboring cell and select the one with shortest distance to start, until we reach start
 		while(pathCompleted == false){
 			if(mazeArray[curCell.cellX][curCell.cellY+1] !== undefined){
 				nextCell = mazeArray[curCell.cellX][curCell.cellY+1];
@@ -231,11 +242,13 @@ function BFS(mazeArray){
 				}
 			}
 
+			// draw our path at each step
 			ctx.beginPath();
 			ctx.moveTo((curCell.cellX*30)+15,(curCell.cellY*30)+15);
 			ctx.lineTo((lowestNeighbor.cellX*30)+15,(lowestNeighbor.cellY*30)+15);
 			ctx.stroke();
 
+			// check if we just reached start
 			if(lowestNeighbor.start == 1){
 				pathCompleted = true;
 			}
@@ -257,6 +270,7 @@ function checkNext(curCell, nextCell, searchQueue){
 	} else if (nextCell.distanceFromStart == 0 && nextCell.start == 0){
 		nextCell.distanceFromStart = curCell.distanceFromStart+1;
 		searchQueue.enqueue(nextCell);
+		ctx.fillStyle = "#0000ff";
 		ctx.fillText(nextCell.distanceFromStart,(nextCell.cellX*30)+15,(nextCell.cellY*30)+15)
 	}
 }
